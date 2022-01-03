@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 const port = process.env.port || 5000;
-const mongoose = require("mongoose");
 const post = require("./routes/post");
 
 app.use(express.static("/public"));
