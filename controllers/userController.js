@@ -1,9 +1,23 @@
 const userModel = require("../models/user");
+const postModel = require("../models/post");
 
 const userObjectWithoutPassword = (userObject) => {
   const uObj = { ...userObject._doc };
   delete uObj.password;
   return uObj;
+};
+
+// returns current userObject
+const getProfile = async (req, res) => {
+  try {
+    const uid = req.headers.id;
+    const userObject = await userModel.findById(uid);
+    const uObj = userObjectWithoutPassword(userObject);
+    const postOfLoggedInUser = await postModel.find({ uid: uObj._id });
+    res.status(200).json({ ...uObj, posts: postOfLoggedInUser });
+  } catch (err) {
+    res.status(400).json(err);
+  }
 };
 
 const getUser = async (req, res) => {
@@ -13,7 +27,8 @@ const getUser = async (req, res) => {
     const uid = req.params.id;
     const userObject = await userModel.findById(uid);
     const uObj = userObjectWithoutPassword(userObject);
-    res.status(200).json(uObj);
+    const postOfLoggedInUser = await postModel.find({ uid: uObj._id });
+    res.status(200).json({ ...uObj, posts: postOfLoggedInUser });
   } catch (err) {
     res.status(400).json(err);
   }
@@ -113,4 +128,4 @@ const unfollowUser = async (req, res) => {
   }
 };
 
-module.exports = { followUser, unfollowUser, deleteUser, getUser };
+module.exports = { followUser, unfollowUser, deleteUser, getUser, getProfile };

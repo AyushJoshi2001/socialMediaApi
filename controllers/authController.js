@@ -1,4 +1,5 @@
 const userModel = require("../models/user");
+const postModel = require("../models/post");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../secretKey");
@@ -54,8 +55,11 @@ const loginUser = async (req, res) => {
     // updating userObject without password field
     const uObj = { ...userObject._doc };
     delete uObj.password;
-
-    res.status(200).json({ user: uObj, token: accessToken });
+    const postOfLoggedInUser = await postModel.find({ uid: uObj._id });
+    res.status(200).json({
+      user: { ...uObj, posts: postOfLoggedInUser },
+      token: accessToken,
+    });
   } catch (err) {
     console.log(err);
     res.status(400).json(err);

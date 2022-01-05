@@ -6,6 +6,7 @@ const user = require("./routes/user");
 const bodyParser = require("body-parser");
 const authenticateToken = require("./middleware/authMiddleware");
 const { registerUser, loginUser } = require("./controllers/authController");
+const { getProfile } = require("./controllers/userController");
 
 const port = process.env.port || 5000;
 app.use(express.static("/public"));
@@ -23,7 +24,9 @@ app.use(authenticateToken);
 app.use("/api/post", post);
 app.use("/api/user", user);
 
-app.post("/logout", (req, res) => {
+app.get("/api/profile", getProfile);
+
+app.post("api/logout", (req, res) => {
   res
     .status(200)
     .json(
