@@ -1,4 +1,5 @@
 const express = require("express");
+const { unfollowUser, followUser } = require("../controllers/userController");
 const router = express.Router();
 const userModel = require("../models/user");
 
@@ -47,5 +48,9 @@ router.delete("/:id", async (req, res) => {
     res.status(400).json(err);
   }
 });
+
+router.post("/:id/follow", followUser);
+
+router.post("/:id/unfollow", unfollowUser);
 
 module.exports = router;

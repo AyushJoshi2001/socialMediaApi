@@ -7,9 +7,8 @@ const bodyParser = require("body-parser");
 const userModel = require("./models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-// const userPostMappingModel = require("./models/userPostMapping");
-
-const JWT_SECRET_KEY = "ThisIsSecretKeyForJsonWebToken";
+const authenticateToken = require("./middleware/authMiddleware");
+const { JWT_SECRET_KEY } = require("./secretKey");
 
 const port = process.env.port || 5000;
 app.use(express.static("/public"));
@@ -63,7 +62,8 @@ app.post("/api/login", async (req, res) => {
     // creating JWT
     const accessToken = jwt.sign(
       { email: userObject.email, id: userObject._id },
-      JWT_SECRET_KEY
+      JWT_SECRET_KEY,
+      { expiresIn: "1d" }
     );
 
     // updating userObject without password field
@@ -77,29 +77,17 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// this method will authorize the user based on token get in request header.
-function authenticateToken(req, res, next) {
-  const token = req.headers.authorization;
-  if (token) {
-    jwt.verify(token, JWT_SECRET_KEY, (err, payload) => {
-      if (err) {
-        return res.status(403).json("Token is not valid!");
-      }
-      req.headers = { ...req.headers, id: payload.id };
-      next();
-    });
-  } else {
-    res.status(401).json("You are not authenticated!");
-  }
-}
-
 app.use(authenticateToken);
 app.use("/api/post", post);
 app.use("/api/user", user);
 
-// app.get("/", (req, res) => {
-//   res.status(200).send("<h1>hello</h1>");
-// });
+app.post("/logout", (req, res) => {
+  res
+    .status(200)
+    .json(
+      "logout feature is not working right now token will be expire in 1 day"
+    );
+});
 
 app.listen(port, () => {
   console.log("Server is running on port:5000...");
