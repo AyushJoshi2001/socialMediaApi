@@ -25,6 +25,8 @@ router.put("/:pid", (req, res) => {
   res.status(200).send("Post update feature is not available yet!");
 });
 
+router.post("/comment/:pid", createPost);
+
 // return success or failed status
 // after authorization id(which comes inside header for authorization)==uid(which comes inside post.uid and pid for fetching the post)
 router.delete("/:pid", deletePost);

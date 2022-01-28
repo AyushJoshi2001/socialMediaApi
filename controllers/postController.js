@@ -95,10 +95,34 @@ const likeDislikePost = async (req, res) => {
   }
 };
 
+const createComment = async (req, res) => {
+  const pid = req.params.pid;
+  const uid = req.headers.id;
+  const msg = req.body.msg;
+  if (pid.length < 24) {
+    return res.status(403).json("invalid post id");
+  }
+
+  try {
+    const post = await postModel.findById(pid);
+    if (post) {
+      await postModel.findByIdAndUpdate(pid, {
+        $push: { comments: { uid: uid, msg: msg } },
+      });
+      res.status(200).json("comment success");
+    } else {
+      res.status(403).json("post not exist");
+    }
+  } catch (err) {
+    res.status(403).json(err);
+  }
+};
+
 module.exports = {
   getAllPosts,
   createPost,
   getSinglePost,
   deletePost,
   likeDislikePost,
+  createComment,
 };
